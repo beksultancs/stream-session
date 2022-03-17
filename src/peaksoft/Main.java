@@ -2,13 +2,18 @@ package peaksoft;
 
 import peaksoft.book.Book;
 import peaksoft.book.TypeOfBook;
+import peaksoft.exceptions.InvalidPercentException;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.time.LocalDate;
 import java.time.Month;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Random;
+import java.util.function.BiFunction;
+import java.util.function.Function;
+import java.util.function.Predicate;
 
 import static peaksoft.book.TypeOfBook.*;
 
@@ -16,8 +21,27 @@ public class Main {
 
     public static void main(String[] args) {
 	// write your code here
-        getBooks().stream().filter(x->x.isBestSeller()).forEach(System.out::println);
+        System.out.println("Max");
+        getBooks().stream().max(Comparator.comparing(Book::getPrice)).ifPresent(System.out::println);
+        System.out.println("Min");
+        getBooks().stream().min(Comparator.comparing(Book::getPrice)).ifPresent(System.out::println);
+
+        BigDecimal bigDecimal = new BigDecimal(12);
+        System.out.println(findByPercent.apply(bigDecimal, 10));
     }
+
+    private static BiFunction<BigDecimal, Integer, BigDecimal> findByPercent = (bigDecimal, percent) -> {
+        if (percent > 100 || percent < 0) {
+            throw new InvalidPercentException(
+                    "percent should be less than 100 and more than 0: your percent: " +  percent
+            );
+        }
+
+        BigDecimal bigDecimalPercent = BigDecimal.valueOf(percent);
+        BigDecimal hundredPercent = BigDecimal.valueOf(100);
+        BigDecimal result = bigDecimal.multiply(bigDecimalPercent).divide(hundredPercent);
+        return bigDecimal.subtract(result);
+    };
 
     private static List<Book> getBooks() {
         Random random = new Random();
