@@ -10,6 +10,7 @@ import java.time.LocalDate;
 import java.time.Month;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
@@ -22,13 +23,12 @@ public class Main {
 
     public static void main(String[] args) {
 	// write your code here
-        getBooks().stream()
-                .max(Comparator.comparing(Book::getPrice))
-                .ifPresent(book -> System.out.println(book.getDiscountedPrice()));
+        Map<Integer, Book> bookMap = Map.of(
+                1, getBooks().get(0),
+                2, getBooks().get(1)
+        );
 
-        getBooks().stream()
-                .min(Comparator.comparing(Book::getPrice))
-                .ifPresent(printWithDiscountedPrice);
+        bookMap.forEach((key, value) -> System.out.println(key + " : " + value));
     }
 
     private static Consumer<Book> printWithDiscountedPrice = book -> System.out.println(book.getDiscountedPrice());
