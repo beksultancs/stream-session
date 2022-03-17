@@ -1,8 +1,11 @@
 package peaksoft.book;
 
+import peaksoft.exceptions.InvalidPercentException;
+
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.function.BiFunction;
 
 /**
  * @author Beksultan
@@ -96,6 +99,22 @@ public class Book {
 
     public void setDiscount(int discount) {
         this.discount = discount;
+    }
+
+    public BigDecimal getDiscountedPrice() {
+        BiFunction<BigDecimal, Integer, BigDecimal> findByPercent = (bigDecimal, percent) -> {
+            if (percent > 100 || percent < 0) {
+                throw new InvalidPercentException(
+                        "percent should be less than 100 and more than 0: your percent: " +  percent
+                );
+            }
+
+            BigDecimal bigDecimalPercent = BigDecimal.valueOf(percent);
+            BigDecimal hundredPercent = BigDecimal.valueOf(100);
+            BigDecimal result = bigDecimal.multiply(bigDecimalPercent).divide(hundredPercent);
+            return bigDecimal.subtract(result);
+        };
+        return findByPercent.apply(price, discount);
     }
 
     @Override

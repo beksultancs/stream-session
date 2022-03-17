@@ -12,6 +12,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Random;
 import java.util.function.BiFunction;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -21,27 +22,16 @@ public class Main {
 
     public static void main(String[] args) {
 	// write your code here
-        System.out.println("Max");
-        getBooks().stream().max(Comparator.comparing(Book::getPrice)).ifPresent(System.out::println);
-        System.out.println("Min");
-        getBooks().stream().min(Comparator.comparing(Book::getPrice)).ifPresent(System.out::println);
+        getBooks().stream()
+                .max(Comparator.comparing(Book::getPrice))
+                .ifPresent(book -> System.out.println(book.getDiscountedPrice()));
 
-        BigDecimal bigDecimal = new BigDecimal(12);
-        System.out.println(findByPercent.apply(bigDecimal, 10));
+        getBooks().stream()
+                .min(Comparator.comparing(Book::getPrice))
+                .ifPresent(printWithDiscountedPrice);
     }
 
-    private static BiFunction<BigDecimal, Integer, BigDecimal> findByPercent = (bigDecimal, percent) -> {
-        if (percent > 100 || percent < 0) {
-            throw new InvalidPercentException(
-                    "percent should be less than 100 and more than 0: your percent: " +  percent
-            );
-        }
-
-        BigDecimal bigDecimalPercent = BigDecimal.valueOf(percent);
-        BigDecimal hundredPercent = BigDecimal.valueOf(100);
-        BigDecimal result = bigDecimal.multiply(bigDecimalPercent).divide(hundredPercent);
-        return bigDecimal.subtract(result);
-    };
+    private static Consumer<Book> printWithDiscountedPrice = book -> System.out.println(book.getDiscountedPrice());
 
     private static List<Book> getBooks() {
         Random random = new Random();
